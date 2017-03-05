@@ -1,12 +1,25 @@
+import inspect
 import scrapy
 print(scrapy.__file__)
 import json
 import requests
-from instagram.items import UserItem
-from instagram.items import PostItem
+from insta.items import UserItem
+from insta.items import PostItem
 from scrapy.spider import BaseSpider as Spider
 from pprint import pprint
 import csv
+from instagram import client, subscriptions
+
+'''
+client_id = '7c1a0e1ecde747508933150a13da8603'
+client_secret = '5cc0e027b447486e90a954bd72501e61'
+redirect_uri = 'http://localhost:8515/oauth_callback'
+#access_token='53112486.7c1a0e1.02ecaa1b8c9d4910a480b7fd77d2e3c7'
+code ='adb646dd3517447fb3606b1593d858a7'
+'''
+#user_id='53112486'
+
+
 
 class InstagramSpider(Spider):
 
@@ -17,13 +30,59 @@ class InstagramSpider(Spider):
     def __init__(self):
         #self.start_urls = ["https://www.instagram.com/_spataru/?__a=1"]
         #self.start_urls = ["https://www.instagram.com/mona_of_green_gables/?__a=1"]
-        self.start_urls = ["https://www.instagram.com/ducks_love_sun/?__a=1"]
+        #self.start_urls = ["https://www.instagram.com/ducks_love_sun/?__a=1"]
+        self.start_urls = ["https://www.instagram.com/mona_of_green_gables/?__a=1"]
     def parse(self, response):
+        
+        url = u'https://api.instagram.com/oauth/access_token'
+        client_id = '7c1a0e1ecde747508933150a13da8603'
+        client_secret = '5cc0e027b447486e90a954bd72501e61'
+        redirect_uri = 'http://localhost:8515/oauth_callback'
+        access_token='53112486.7c1a0e1.02ecaa1b8c9d4910a480b7fd77d2e3c7'
+        code ='e7e9dc1396b142a8a25bebf7e241c4ee'
+        '''
+        data = { 
+            'client_id': client_id,
+            'client_secret': client_secret,
+            'code': code,
+            'grant_type': 'authorization_code',
+            'redirect_uri': redirect_uri
+        }
+
+        response = requests.post(url, data=data)
+        account_info = json.loads(response.content)
+        #print account_info[0]
+        #print str(account_info[0])
+        pprint(account_info)
+        '''
+        #api = client.InstagramAPI(access_token=access_token)
+
+
+        json_response = {}
+
         #get the json file
         json_response = {}
         try:
+            
+            api = client.InstagramAPI(access_token=access_token)
+            print(api)
+            
+            followers = []
+            pprint(api_user_recent_media(user_id=53112486, count=3))
+            pprint(api.user_followed_by(user_id=53112486))
+
+            '''
+            for p in api.user_followed_by(user_id=user_id, as_generator=True, max_pages=None):
+                followers.extend(p[0])
+
+            followers = [str(u).replace('User: ','') for u in followers]
+
+            print len(followers), 'followers'
+            print followers
+            '''
             json_response = json.loads(response.body_as_unicode())
             #pprint(json_response)
+            #pprint(json_response["user"])
             print("monamona")
             #print(json_response["user"]["follows"])
             #print json.dumps(json_response["user"]["media"]["nodes"][1]["comments"][1], indent=4, sort_keys=True)
@@ -46,9 +105,10 @@ class InstagramSpider(Spider):
             end_cursors = []
             media_data = json_response["user"]["media"]
             has_next_page = media_data["page_info"]
-            data = json.loads(requests.get("https://www.instagram.com/ducks_love_sun/?__a=1").text)
+            data = json.loads(requests.get("https://www.instagram.com/buzzfeed/?__a=1").text)
             #pprint(data)
             count = 0
+            '''
             while data["user"]["media"]["page_info"]["has_next_page"]:
                 end_cursors.append(data["user"]["media"]["page_info"]["end_cursor"])
                 data = json.loads(requests.get('https://www.instagram.com/ducks_love_sun/?__a=1&max_id={}'.format(end_cursors[-1])).text)
@@ -60,14 +120,13 @@ class InstagramSpider(Spider):
 
                     #pprint(data)
                     print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-            
+            '''
             #pprint(has_next_page)
             #print(len(nodes_data))
 
             #pprint(nodes_data)
             media_count = json_response["user"]["media"]["count"]
             #for i in range(len(nodes_data)):
-            print media_data["nodes"][10]["comments"]["count"]
             print("8888888888888888888888888888888")
             #for i in range(media_count):
             #    print media_data["nodes"][i]["comments"]["count"]#, nodes_data[i]["likes"]["count"], nodes_data[i]["display_src"]
@@ -75,8 +134,8 @@ class InstagramSpider(Spider):
 
         except:
             #self.logger.info('%s doesnt exist', response.url)
-            
-            pass
+            print("hello")
+            #pass
         if json_response["user"]["is_private"]:
             return;
         #check if the username even worked

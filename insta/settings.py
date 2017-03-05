@@ -6,10 +6,10 @@
 #     http://doc.scrapy.org/topics/settings.html
 #
 
-BOT_NAME = 'instagram'
+BOT_NAME = 'insta'
 BOT_VERSION = '1.0'
 
-SPIDER_MODULES = ['instagram.spiders']
-NEWSPIDER_MODULE = 'instagram.spiders'
+SPIDER_MODULES = ['insta.spiders']
+NEWSPIDER_MODULE = 'insta.spiders'
 USER_AGENT = '%s/%s' % (BOT_NAME, BOT_VERSION)
 
