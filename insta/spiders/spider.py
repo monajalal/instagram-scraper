@@ -10,16 +10,7 @@ from pprint import pprint
 import csv
 from instagram import client, subscriptions
 
-'''
-client_id = '7c1a0e1ecde747508933150a13da8603'
-client_secret = '5cc0e027b447486e90a954bd72501e61'
-redirect_uri = 'http://localhost:8515/oauth_callback'
-#access_token='53112486.7c1a0e1.02ecaa1b8c9d4910a480b7fd77d2e3c7'
-code ='adb646dd3517447fb3606b1593d858a7'
-'''
 #user_id='53112486'
-
-
 
 class InstagramSpider(Spider):
 
@@ -36,11 +27,6 @@ class InstagramSpider(Spider):
     def parse(self, response):
         
         url = u'https://api.instagram.com/oauth/access_token'
-        client_id = '7c1a0e1ecde747508933150a13da8603'
-        client_secret = '5cc0e027b447486e90a954bd72501e61'
-        redirect_uri = 'http://localhost:8515/oauth_callback'
-        access_token='53112486.7c1a0e1.02ecaa1b8c9d4910a480b7fd77d2e3c7'
-        code ='e7e9dc1396b142a8a25bebf7e241c4ee'
         '''
         data = { 
             'client_id': client_id,
@@ -93,6 +79,7 @@ class InstagramSpider(Spider):
             #pprint(img_response["media"]["likes"].items())
             comment_count = 0
             #end_cursors = []
+            '''
             image_comments = img_response
             print image_comments["media"]["comments"]["nodes"][1]["text"]
             while image_comments["media"]["comments"]["page_info"]["has_next_page"]:
@@ -105,18 +92,15 @@ class InstagramSpider(Spider):
                     comment_count = comment_count + 1
                     print image_comments["media"]["comments"]["nodes"][i]["text"], comment_count
                 end_cursor = ""
-                '''
-        
-            for attribute, value in img_response["media"]["comments"]["nodes"].iteritems():
-                print attribute, value
+
             '''
             print("*********************************")
             #end_cursors = []
             media_data = json_response["user"]["media"]
             has_next_page = media_data["page_info"]
-            #data = json.loads(requests.get("https://www.instagram.com/buzzfeed/?__a=1").text)
+            #data = json.loads(requests.get("https://www.instagram.com/mona_of_green_gables/?__a=1").text)
             count = 0
-            '''
+            
             while data["user"]["media"]["page_info"]["has_next_page"]:
                 end_cursors.append(data["user"]["media"]["page_info"]["end_cursor"])
                 data = json.loads(requests.get('https://www.instagram.com/ducks_love_sun/?__a=1&max_id={}'.format(end_cursors[-1])).text)
@@ -125,14 +109,6 @@ class InstagramSpider(Spider):
                 for i in range(len(json_response["user"]["media"]["nodes"])):
                     count = count + 1
                     print json_response["user"]["media"]["nodes"][i]["likes"]["count"], count
-
-                    #pprint(data)
-                    print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-            ://www.instagram.com/p/'+ img_code + '/?__a=1'rint("8888888888888888888888888888888")
-            '''
-            media_count = json_response["user"]["media"]["count"]
-            #for i in range(media_count):
-            #    print media_data["nodes"][i]["comments"]["count"]#, nodes_data[i]["likes"]["count"], nodes_data[i]["display_src"]
 
         except:
             #self.logger.info('%s doesnt exist', response.url)
