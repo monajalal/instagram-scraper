@@ -22,7 +22,7 @@ class InstagramSpider(Spider):
         #self.start_urls = ["https://www.instagram.com/_spataru/?__a=1"]
         #self.start_urls = ["https://www.instagram.com/mona_of_green_gables/?__a=1"]
         #self.start_urls = ["https://www.instagram.com/ducks_love_sun/?__a=1"]
-        self.start_urls = ["https://www.instagram.com/buzzfeed/?__a=1"]
+        self.start_urls = ["https://www.instagram.com/mona_of_green_gables/?__a=1"]
         #self.start_urls = ["https://www.instagram.com/mona_of_green_gables/?__a=1"]
     def parse(self, response):
         
@@ -94,21 +94,17 @@ class InstagramSpider(Spider):
                 end_cursor = ""
 
             '''
-            print("*********************************")
-            #end_cursors = []
-            media_data = json_response["user"]["media"]
-            has_next_page = media_data["page_info"]
-            #data = json.loads(requests.get("https://www.instagram.com/mona_of_green_gables/?__a=1").text)
+            end_cursors = []
+            data = json.loads(requests.get("https://www.instagram.com/mona_of_green_gables/?__a=1").text)
             count = 0
-            
             while data["user"]["media"]["page_info"]["has_next_page"]:
                 end_cursors.append(data["user"]["media"]["page_info"]["end_cursor"])
-                data = json.loads(requests.get('https://www.instagram.com/ducks_love_sun/?__a=1&max_id={}'.format(end_cursors[-1])).text)
+                data = json.loads(requests.get('https://www.instagram.com/mona_of_green_gables/?__a=1&max_id={}'.format(end_cursors[-1])).text)
                 #pprint(data)
                 
                 for i in range(len(json_response["user"]["media"]["nodes"])):
                     count = count + 1
-                    print json_response["user"]["media"]["nodes"][i]["likes"]["count"], count
+                    print int(json_response["user"]["media"]["nodes"][i]["likes"]["count"]), count
 
         except:
             #self.logger.info('%s doesnt exist', response.url)
