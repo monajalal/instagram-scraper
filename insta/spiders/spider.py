@@ -21,8 +21,9 @@ class InstagramSpider(Spider):
     def __init__(self):
         #self.start_urls = ["https://www.instagram.com/_spataru/?__a=1"]
         #self.start_urls = ["https://www.instagram.com/mona_of_green_gables/?__a=1"]
-        #self.start_urls = ["https://www.instagram.com/ducks_love_sun/?__a=1"]
-        self.start_urls = ["https://www.instagram.com/mona_of_green_gables/?__a=1"]
+        #self.start_urls = ["ttps://www.instagram.com/ducks_love_sun/?__a=1"]
+        self.start_urls = ["https://www.instagram.com/buzzfeed/?__a=1"]
+
         #self.start_urls = ["https://www.instagram.com/mona_of_green_gables/?__a=1"]
     def parse(self, response):
         
@@ -71,7 +72,8 @@ class InstagramSpider(Spider):
             #print(json_response["user"]["follows"])
             #print json.dumps(json_response["user"]["media"]["nodes"][1]["comments"][1], indent=4, sort_keys=True)
             #print json.dumps(json_response["user"]["media"]["nodes"][1]["code"], indent=4, sort_keys=True)
-            img_code = json_response["user"]["media"]["nodes"][1]["code"]
+            img_code = json_response["user"]["media"]["nodes"][0]["code"]
+            print img_code
             img_url = 'https://www.instagram.com/p/'+ img_code + '/?__a=1'
             print(img_url)
             img_response = json.loads(requests.get(img_url).text)
@@ -79,24 +81,31 @@ class InstagramSpider(Spider):
             #pprint(img_response["media"]["likes"].items())
             comment_count = 0
             #end_cursors = []
-            '''
+            
             image_comments = img_response
-            print image_comments["media"]["comments"]["nodes"][1]["text"]
-            while image_comments["media"]["comments"]["page_info"]["has_next_page"]:
-                end_cursor = image_comments["media"]["comments"]["page_info"]["end_cursor"]
-                print(end_cursor)
-                image_comments = requests.get(img_url+"&max_id="+end_cursor).json()
-                #pprint(image_comments)
-                print(len(image_comments["media"]["comments"]["nodes"]))
+            #print image_comments["media"]["comments"]["nodes"][1]["text"]
+            print image_comments["media"]["comments"]["page_info"]["has_next_page"]
+            
+            if image_comments["media"]["comments"]["page_info"]["has_next_page"] == True:
+                while image_comments["media"]["comments"]["page_info"]["has_next_page"]:
+                    print "next pazaaage"
+                    end_cursor = image_comments["media"]["comments"]["page_info"]["end_cursor"]
+                    print(end_cursor)
+                    image_comments = requests.get(img_url+"&max_id="+end_cursor).json()
+                    #pprint(image_comments)
+                    print(len(image_comments["media"]["comments"]["nodes"]))
+                    for i in range(len(image_comments["media"]["comments"]["nodes"])):
+                        comment_count = comment_count + 1
+                        print image_comments["media"]["comments"]["nodes"][i]["text"], comment_count
+            else:
                 for i in range(len(image_comments["media"]["comments"]["nodes"])):
                     comment_count = comment_count + 1
                     print image_comments["media"]["comments"]["nodes"][i]["text"], comment_count
-                end_cursor = ""
-
-            '''
+            
             end_cursors = []
             data = json.loads(requests.get("https://www.instagram.com/mona_of_green_gables/?__a=1").text)
             count = 0
+            '''
             while data["user"]["media"]["page_info"]["has_next_page"]:
                 end_cursors.append(data["user"]["media"]["page_info"]["end_cursor"])
                 data = json.loads(requests.get('https://www.instagram.com/mona_of_green_gables/?__a=1&max_id={}'.format(end_cursors[-1])).text)
@@ -105,7 +114,7 @@ class InstagramSpider(Spider):
                 for i in range(len(json_response["user"]["media"]["nodes"])):
                     count = count + 1
                     print int(json_response["user"]["media"]["nodes"][i]["likes"]["count"]), count
-
+            '''
         except:
             #self.logger.info('%s doesnt exist', response.url)
             print("hello")
@@ -153,3 +162,5 @@ class InstagramSpider(Spider):
         except:
             pass
             #self.logger.info("Error during parsing %s", response.url)
+
+
