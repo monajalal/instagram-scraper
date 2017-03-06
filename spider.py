@@ -71,8 +71,7 @@ class InstagramSpider(Spider):
             #print(json_response["user"]["follows"])
             #print json.dumps(json_response["user"]["media"]["nodes"][1]["comments"][1], indent=4, sort_keys=True)
             #print json.dumps(json_response["user"]["media"]["nodes"][1]["code"], indent=4, sort_keys=True)
-            img_code = json_response["user"]["media"]["nodes"][0]["code"]
-
+            img_code = json_response["user"]["media"]["nodes"][5]["code"]
             print img_code
             img_url = 'https://www.instagram.com/p/'+ img_code + '/?__a=1'
             print(img_url)
@@ -81,27 +80,26 @@ class InstagramSpider(Spider):
             #pprint(img_response["media"]["likes"].items())
             comment_count = 0
             image_comments = img_response
-            comment_end_cursors = []
             cursor = image_comments["media"]["comments"]["page_info"]["end_cursor"]
             print image_comments["media"]["comments"]["page_info"]["has_next_page"]
-            global_comment_count = img_response["media"]["comments"]["count"]
-            if image_comments["media"]["comments"]["page_info"]["has_next_page"] == True: 
-                while comment_count < global_comment_count and image_comments["media"]["comments"]["page_info"]["has_next_page"] == True:
+            
+            if image_comments["media"]["comments"]["page_info"]["has_next_page"] == True:
+                
+                while cursor != None and image_comments["media"]["comments"]["page_info"]["has_next_page"] == True:
+                    print "next pazaaage"
                     print len(image_comments["media"]["comments"]["nodes"]) 
-                    comment_end_cursors.append(image_comments["media"]["comments"]["page_info"]["end_cursor"])
-                    print("***************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************")
-        
-                    print(img_url+"&max_id=i{}".format(comment_end_cursors[-1]))
-                    image_comments = json.loads(requests.get(img_url+"&max_id=i{}".format(comment_end_cursors[-1])).text)
+            
+                    cursor = image_comments["media"]["comments"]["page_info"]["end_cursor"]
+                    print("*****************************")
+                    
+                    print(cursor)
+                    image_comments = requests.get(img_url+"&max_id="+cursor).json()
                     #pprint(image_comments)
                     print(len(image_comments["media"]["comments"]["nodes"]))
-                    '''
                     for i in range(len(image_comments["media"]["comments"]["nodes"])):
                         comment_count = comment_count + 1
                         print image_comments["media"]["comments"]["nodes"][i]["text"], comment_count
                         #pprint(image_comments["media"])
-
-                        '''
             else:
                 for i in range(len(image_comments["media"]["comments"]["nodes"])):
                     comment_count = comment_count + 1
